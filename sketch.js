@@ -5,7 +5,7 @@ Math.seedrandom();
 var s = 10;
 
 // Number of worms to create the maze
-var worms = 25;
+var worms = 2;
 
 // Number of total moves to be made per frame
 var cpf = 1000;
@@ -58,7 +58,7 @@ function draw() {
 					canGoTo[n].push(index(current[n].i, current[n].j));
 				}
 
-				var next = checkNeighbours(current[n], n);
+				var next = checkNeighbours(current[n]);
 
 				if (next != undefined) {
 
@@ -124,6 +124,8 @@ function draw() {
 		}
 
 		noLoop();
+
+		// findSolution(grid[0], grid[grid.length - 1]);
 
 	}
 
@@ -221,7 +223,7 @@ function removeWalls(a, b) {
 	}
 }
 
-function checkNeighbours(cell, group) {
+function checkNeighbours(cell) {
 
 	var neighbours = [];
 
@@ -257,6 +259,43 @@ function checkNeighbours(cell, group) {
 	}
 }
 
+function randomPathNeighbour(cell) {
+
+	var neighbours = [];
+
+	i = cell.i;
+	j = cell.j;
+
+	var top = grid[index(i, j - 1)];
+	var right = grid[index(i + 1, j)];
+	var bottom = grid[index(i, j + 1)];
+	var left = grid[index(i - 1, j)];
+
+	if (top && !top.visited && !cell.walls[0] && !top.walls[2]) {
+		neighbours.push(top);
+	}
+
+	if (right && !right.visited && !cell.walls[1] && !right.walls[3]) {
+		neighbours.push(right);
+	}
+
+	if (bottom && !bottom.visited && !cell.walls[2] && !bottom.walls[0]) {
+		neighbours.push(bottom);
+	}
+
+	if (left && !left.visited && !cell.walls[3] && !left.walls[1]) {
+		neighbours.push(left);
+	}
+
+	if (neighbours.length > 0) {
+		var r = floor(Math.random() * neighbours.length);
+		return neighbours[r];
+	} else {
+		return undefined;
+	}
+
+}
+
 function show(cell) {
 
 	i = cell.i;
@@ -284,6 +323,8 @@ function show(cell) {
 	if (walls[3]) {
 		line(x, y + s, x, y);
 	}
+
+	noStroke();
 }
 
 function link() {
@@ -349,4 +390,72 @@ function visit(cell) {
 function goTo(cell) {
 	fill(0, 127, 127);
 	rect(cell.i * s, cell.j * s, s, s);
+}
+
+function possible(cell) {
+	fill(0, 127, 255);
+	rect(cell.i * s, cell.j * s, s, s);
+}
+
+function solution(cell) {
+	fill(0, 127, 0);
+	rect(cell.i * s, cell.j * s, s, s);
+}
+
+function findSolution(a, b) {
+
+	stack = [];
+	visited = [];
+
+	current = a;
+
+	for (var i = 0; i < grid.length; i++) {
+		grid[i].visited = false;
+	}
+
+	console.log(current != b);
+
+	while (current != b) {
+
+		if (stack)
+
+		current.visited = true;
+
+		if (!visited.includes(index(current.i, current.j))) {
+			visited.push(index(current.i, current.j));
+		}
+
+		var next = randomPathNeighbour(current);
+
+		if (next != undefined) {
+
+			stack.push(next);
+			next.visited = true;
+
+			if (!visited.includes(index(next.i, next.j))) {
+				visited.push(index(next.i, next.j));
+			}
+
+			current = next;
+
+		} else {
+
+			current = stack.pop();
+
+		}
+
+	}
+
+	for (var i = 0; i < visited.length; i++) {
+		possible(visited[i]);
+	}
+
+	for (var i = 0; i < stack.length; i++) {
+		solution(stack[i]);
+	}
+
+	for (var i = 0; i < grid.length; i++) {
+		show(grid[i]);
+	}
+
 }
