@@ -125,7 +125,7 @@ function draw() {
 
 		noLoop();
 
-		// findSolution(grid[0], grid[grid.length - 1]);
+		findSolution(grid[0], grid[grid.length - 1]);
 
 	}
 
@@ -222,6 +222,21 @@ function removeWalls(a, b) {
 		b.walls[0] = false;
 	}
 }
+
+// function drawSolutionLine(a, b) {
+// 	var x = a.i - b.i;
+// 	if (x === 1 || x === -cols + 1) {
+		
+// 	} else if (x === -1 || x === cols - 1) {
+		
+// 	}
+// 	var y = a.j - b.j;
+// 	if (y === 1 || y === -rows + 1) {
+		
+// 	} else if (y === -1 || y === rows - 1) {
+		
+// 	}
+// }
 
 function checkNeighbours(cell) {
 
@@ -415,9 +430,7 @@ function findSolution(a, b) {
 
 	console.log(current != b);
 
-	while (current != b) {
-
-		if (stack)
+	while (current != b && current !== undefined) {
 
 		current.visited = true;
 
@@ -429,6 +442,7 @@ function findSolution(a, b) {
 
 		if (next != undefined) {
 
+			stack.push(current);
 			stack.push(next);
 			next.visited = true;
 
